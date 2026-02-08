@@ -1,7 +1,5 @@
 <?php
-/**
- * Contrôleur des réservations
- */
+// Contrôleur pour gérer les réservations
 
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../models/Reservation.php';
@@ -12,6 +10,7 @@ class ReservationController {
     private $reservation;
     private $salle;
 
+    // Initialiser les dépendances
     public function __construct() {
         $database = new Database();
         $this->db = $database->getConnection();
@@ -19,30 +18,34 @@ class ReservationController {
         $this->salle = new Salle($this->db);
     }
 
-    /**
-     * Afficher le formulaire de réservation
-     */
-    public function create() {
-        // Vérifier que l'utilisateur est connecté
+    // Vérifier que l'utilisateur est authentifié
+    private function requireLogin() {
         if (!isset($_SESSION['user_id'])) {
             header('Location: index.php?action=login');
             exit;
         }
+    }
 
-        // Vérifier que l'ID de la salle est fourni
-        if (!isset($_GET['salle_id']) || !is_numeric($_GET['salle_id'])) {
+    // Afficher le formulaire de création de réservation
+    public function create() {
+        $this->requireLogin();
+
+        // Vérifier et récupérer l'ID de la salle
+        if (empty($_GET['salle_id']) || !is_numeric($_GET['salle_id'])) {
             header('Location: index.php?action=salles');
             exit;
         }
 
         $salle_id = (int)$_GET['salle_id'];
         
+        // Vérifier que la salle existe
         if (!$this->salle->getById($salle_id)) {
             $_SESSION['errors'] = ["Salle introuvable."];
             header('Location: index.php?action=salles');
             exit;
         }
 
+        // Récupérer les messages de session et les nettoyer
         $errors = $_SESSION['errors'] ?? [];
         $old_data = $_SESSION['old_data'] ?? [];
         unset($_SESSION['errors'], $_SESSION['old_data']);
@@ -50,66 +53,44 @@ class ReservationController {
         require_once __DIR__ . '/../views/reservations/create.php';
     }
 
-    /**
-     * Traiter la création d'une réservation
-     */
+    // Traiter l'enregistrement d'une nouvelle réservation
     public function store() {
-        // Vérifier que l'utilisateur est connecté
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: index.php?action=login');
-            exit;
-        }
+        $this->requireLogin();
+
+        // Récupérer les données du formulaire
+        $salle_id = $_POST['salle_id'] ?? null;
+        $date = $_POST['date_reservation'] ?? null;
+        $heure_debut = $_POST['heure_debut'] ?? null;
+        $heure_fin = $_POST['heure_fin'] ?? null;
 
         $errors = [];
-        $salle_id = (int)$_POST['salle_id'];
 
-        // Validation des champs
-        if (empty($_POST['salle_id']) || !is_numeric($_POST['salle_id'])) {
+        // Valider la salle
+        if (empty($salle_id) || !is_numeric($salle_id) || !$this->salle->exists($salle_id)) {
             $errors[] = "La salle est invalide.";
-        } else {
-            // Vérifier que la salle existe
-            if (!$this->salle->exists($salle_id)) {
-                $errors[] = "La salle n'existe pas.";
-            }
         }
 
-        if (empty($_POST['date_reservation'])) {
+        // Valider la date de réservation
+        if (empty($date)) {
             $errors[] = "La date de réservation est obligatoire.";
-        } else {
-            // Vérifier que la date est valide et future
-            $date = $_POST['date_reservation'];
-            $date_obj = DateTime::createFromFormat('Y-m-d', $date);
-            
-            if (!$date_obj || $date_obj->format('Y-m-d') !== $date) {
-                $errors[] = "La date de réservation n'est pas valide.";
-            } elseif ($date_obj < new DateTime('today')) {
-                $errors[] = "La date de réservation doit être dans le futur.";
-            }
+        } elseif (!$this->isValidDate($date) || new DateTime($date) < new DateTime('today')) {
+            $errors[] = "La date doit être valide et dans le futur.";
         }
 
-        if (empty($_POST['heure_debut'])) {
+        // Valider les heures
+        if (empty($heure_debut)) {
             $errors[] = "L'heure de début est obligatoire.";
         }
-
-        if (empty($_POST['heure_fin'])) {
+        if (empty($heure_fin)) {
             $errors[] = "L'heure de fin est obligatoire.";
         }
-
-        // Vérifier que l'heure de fin est après l'heure de début
-        if (!empty($_POST['heure_debut']) && !empty($_POST['heure_fin'])) {
-            $heure_debut = $_POST['heure_debut'];
-            $heure_fin = $_POST['heure_fin'];
-            
-            if ($heure_fin <= $heure_debut) {
-                $errors[] = "L'heure de fin doit être postérieure à l'heure de début.";
-            }
+        if (!empty($heure_debut) && !empty($heure_fin) && $heure_fin <= $heure_debut) {
+            $errors[] = "L'heure de fin doit être après l'heure de début.";
         }
 
-        // Vérifier la disponibilité de la salle
-        if (empty($errors)) {
-            if (!$this->reservation->isAvailable($salle_id, $_POST['date_reservation'], $_POST['heure_debut'], $_POST['heure_fin'])) {
-                $errors[] = "Cette salle est déjà réservée pour ce créneau horaire.";
-            }
+        // Vérifier que la salle est disponible au créneau demandé
+        if (empty($errors) && !$this->reservation->isAvailable($salle_id, $date, $heure_debut, $heure_fin)) {
+            $errors[] = "Cette salle est déjà réservée pour ce créneau.";
         }
 
         // S'il y a des erreurs, retourner au formulaire
@@ -120,39 +101,38 @@ class ReservationController {
             exit;
         }
 
-        // Créer la réservation
+        // Créer et enregistrer la réservation
         $this->reservation->user_id = $_SESSION['user_id'];
         $this->reservation->salle_id = $salle_id;
-        $this->reservation->date_reservation = $_POST['date_reservation'];
-        $this->reservation->heure_debut = $_POST['heure_debut'];
-        $this->reservation->heure_fin = $_POST['heure_fin'];
+        $this->reservation->date_reservation = $date;
+        $this->reservation->heure_debut = $heure_debut;
+        $this->reservation->heure_fin = $heure_fin;
         $this->reservation->statut = 'confirmee';
 
+        // Vérifier si l'enregistrement a réussi
         if ($this->reservation->create()) {
             $_SESSION['success'] = "Réservation effectuée avec succès !";
             header('Location: index.php?action=historique');
-            exit;
         } else {
-            $_SESSION['errors'] = ["Une erreur est survenue lors de la réservation."];
+            $_SESSION['errors'] = ["Une erreur est survenue."];
             $_SESSION['old_data'] = $_POST;
             header('Location: index.php?action=reserver&salle_id=' . $salle_id);
-            exit;
         }
+        exit;
     }
 
-    /**
-     * Afficher l'historique des réservations
-     */
+    // Valider le format de la date (YYYY-MM-DD)
+    private function isValidDate($date) {
+        $d = DateTime::createFromFormat('Y-m-d', $date);
+        return $d && $d->format('Y-m-d') === $date;
+    }
+
+    // Afficher l'historique des réservations de l'utilisateur
     public function historique() {
-        // Vérifier que l'utilisateur est connecté
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: index.php?action=login');
-            exit;
-        }
+        $this->requireLogin();
 
-        $stmt = $this->reservation->getByUserId($_SESSION['user_id']);
-        $reservations = $stmt->fetchAll();
-
+        // Récupérer toutes les réservations de l'utilisateur
+        $reservations = $this->reservation->getByUserId($_SESSION['user_id'])->fetchAll();
         $success = $_SESSION['success'] ?? '';
         unset($_SESSION['success']);
 

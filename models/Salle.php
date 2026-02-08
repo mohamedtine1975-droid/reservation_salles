@@ -1,27 +1,27 @@
 <?php
-/**
- * Modèle Salle - Gestion des salles
- */
+// Modèle Salle - Gère les salles disponibles
+// Interagit avec la table 'salles' de la base de données
 
 class Salle {
-    private $conn;
-    private $table = 'salles';
+    private $conn;                   // Connexion à la base
+    private $table = 'salles';       // Nom de la table
 
-    public $id;
-    public $nom;
-    public $capacite;
-    public $localisation;
-    public $description;
-    public $date_creation;
+    // Propriétés de la salle
+    public $id;                      // ID unique
+    public $nom;                     // Nom de la salle
+    public $capacite;                // Nombre de places
+    public $localisation;            // Lieu/étage
+    public $description;             // Description
+    public $date_creation;           // Date de création
 
+    // Initialiser la connexion à la base
     public function __construct($db) {
         $this->conn = $db;
     }
 
-    /**
-     * Obtenir toutes les salles
-     */
+    // Récupérer toutes les salles triées par nom
     public function getAll() {
+        // Requête SQL pour récupérer toutes les salles
         $query = "SELECT id, nom, capacite, localisation, description 
                   FROM " . $this->table . " 
                   ORDER BY nom ASC";
@@ -29,13 +29,13 @@ class Salle {
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
 
+        // Retourner l'objet PDOStatement
         return $stmt;
     }
 
-    /**
-     * Obtenir une salle par ID
-     */
+    // Récupérer une salle par son ID
     public function getById($id) {
+        // Requête SQL pour chercher une salle par ID
         $query = "SELECT id, nom, capacite, localisation, description, date_creation 
                   FROM " . $this->table . " 
                   WHERE id = :id 
@@ -45,7 +45,9 @@ class Salle {
         $stmt->bindParam(':id', $id);
         $stmt->execute();
 
+        // Si la salle existe
         if ($stmt->rowCount() > 0) {
+            // Charger les données
             $row = $stmt->fetch();
             $this->id = $row['id'];
             $this->nom = $row['nom'];
@@ -59,16 +61,16 @@ class Salle {
         return false;
     }
 
-    /**
-     * Vérifier si une salle existe
-     */
+    // Vérifier si une salle existe sans charger tous ses détails
     public function exists($id) {
+        // Requête SQL simple pour vérifier l'existence
         $query = "SELECT id FROM " . $this->table . " WHERE id = :id LIMIT 1";
         
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
         $stmt->execute();
 
+        // Retourner true si trouvée, false sinon
         return $stmt->rowCount() > 0;
     }
 }

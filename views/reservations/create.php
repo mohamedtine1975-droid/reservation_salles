@@ -1,13 +1,16 @@
 <?php $title = "Réserver " . htmlspecialchars($this->salle->nom); ?>
 <?php include __DIR__ . '/../layout/header.php'; ?>
 
+<!-- Titre avec le nom de la salle -->
 <h2>📅 Réserver : <?= htmlspecialchars($this->salle->nom) ?></h2>
 
+<!-- Afficher les informations de la salle -->
 <div class="reservation-info">
     <p><strong>Capacité :</strong> <?= htmlspecialchars($this->salle->capacite) ?> personnes</p>
     <p><strong>Localisation :</strong> <?= htmlspecialchars($this->salle->localisation) ?></p>
 </div>
 
+<!-- Afficher les messages d'erreur s'il y en a -->
 <?php if (!empty($errors)): ?>
     <div class="alert alert-error">
         <ul>
@@ -18,9 +21,12 @@
     </div>
 <?php endif; ?>
 
+<!-- Formulaire de réservation -->
 <form method="POST" action="index.php?action=store_reservation" class="reservation-form">
+    <!-- ID de la salle (caché) -->
     <input type="hidden" name="salle_id" value="<?= $this->salle->id ?>">
 
+    <!-- Champ Date de réservation -->
     <div class="form-group">
         <label for="date_reservation">Date de réservation *</label>
         <input type="date" id="date_reservation" name="date_reservation" 
@@ -28,13 +34,16 @@
                min="<?= date('Y-m-d') ?>" required>
     </div>
 
+    <!-- Champs Heure -->
     <div class="form-row">
+        <!-- Heure de début -->
         <div class="form-group">
             <label for="heure_debut">Heure de début *</label>
             <input type="time" id="heure_debut" name="heure_debut" 
                    value="<?= htmlspecialchars($old_data['heure_debut'] ?? '08:00') ?>" required>
         </div>
 
+        <!-- Heure de fin -->
         <div class="form-group">
             <label for="heure_fin">Heure de fin *</label>
             <input type="time" id="heure_fin" name="heure_fin" 
@@ -42,8 +51,11 @@
         </div>
     </div>
 
+    <!-- Boutons d'actions -->
     <div class="form-actions">
+        <!-- Annuler et retourner à la liste -->
         <a href="index.php?action=salles" class="btn btn-secondary">Annuler</a>
+        <!-- Confirmer la réservation -->
         <button type="submit" class="btn btn-primary">Confirmer la réservation</button>
     </div>
 </form>

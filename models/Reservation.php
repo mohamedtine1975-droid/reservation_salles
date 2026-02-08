@@ -1,39 +1,39 @@
 <?php
-/**
- * Modèle Reservation - Gestion des réservations
- */
+// Modèle Reservation - Gère les réservations des salles
+// Interagit avec la table 'reservations' de la base de données
 
 class Reservation {
-    private $conn;
-    private $table = 'reservations';
+    private $conn;                   // Connexion à la base
+    private $table = 'reservations'; // Nom de la table
 
-    public $id;
-    public $user_id;
-    public $salle_id;
-    public $date_reservation;
-    public $heure_debut;
-    public $heure_fin;
-    public $statut;
-    public $date_creation;
+    // Propriétés de la réservation
+    public $id;                      // ID unique
+    public $user_id;                 // ID de l'utilisateur
+    public $salle_id;                // ID de la salle
+    public $date_reservation;        // Date de la réservation
+    public $heure_debut;             // Heure de début
+    public $heure_fin;               // Heure de fin
+    public $statut;                  // Statut (confirmee/cancellée/etc)
+    public $date_creation;           // Date d'enregistrement
 
+    // Initialiser la connexion à la base
     public function __construct($db) {
         $this->conn = $db;
     }
 
-    /**
-     * Créer une nouvelle réservation
-     */
+    // Créer une nouvelle réservation dans la base
     public function create() {
+        // Requête SQL d'insertion
         $query = "INSERT INTO " . $this->table . " 
                   (user_id, salle_id, date_reservation, heure_debut, heure_fin, statut) 
                   VALUES (:user_id, :salle_id, :date_reservation, :heure_debut, :heure_fin, :statut)";
 
         $stmt = $this->conn->prepare($query);
 
-        // Nettoyage des données
+        // Définir le statut par défaut
         $this->statut = $this->statut ?? 'confirmee';
 
-        // Liaison des paramètres
+        // Lier les paramètres pour éviter les injections SQL
         $stmt->bindParam(':user_id', $this->user_id);
         $stmt->bindParam(':salle_id', $this->salle_id);
         $stmt->bindParam(':date_reservation', $this->date_reservation);
@@ -41,13 +41,13 @@ class Reservation {
         $stmt->bindParam(':heure_fin', $this->heure_fin);
         $stmt->bindParam(':statut', $this->statut);
 
+        // Exécuter et retourner le résultat
         return $stmt->execute();
     }
 
-    /**
-     * Vérifier si une salle est disponible pour un créneau donné
-     */
+    // Vérifier si une salle est disponible pour un créneau donné
     public function isAvailable($salle_id, $date, $heure_debut, $heure_fin, $exclude_id = null) {
+        // Requête pour chercher les réservations qui chevauchent
         $query = "SELECT id FROM " . $this->table . " 
                   WHERE salle_id = :salle_id 
                   AND date_reservation = :date 
@@ -56,6 +56,7 @@ class Reservation {
                       (heure_debut < :heure_fin AND heure_fin > :heure_debut)
                   )";
         
+        // Si on exclut une réservation (utile pour les modifications)
         if ($exclude_id !== null) {
             $query .= " AND id != :exclude_id";
         }
@@ -72,13 +73,13 @@ class Reservation {
 
         $stmt->execute();
 
+        // Retourner true si pas de conflit (0 résultats)
         return $stmt->rowCount() === 0;
     }
 
-    /**
-     * Obtenir les réservations d'un utilisateur
-     */
+    // Récupérer toutes les réservations d'un utilisateur
     public function getByUserId($user_id) {
+        // Requête avec jointure pour récupérer aussi le nom de la salle
         $query = "SELECT r.*, s.nom as salle_nom, s.localisation 
                   FROM " . $this->table . " r
                   INNER JOIN salles s ON r.salle_id = s.id
@@ -89,13 +90,13 @@ class Reservation {
         $stmt->bindParam(':user_id', $user_id);
         $stmt->execute();
 
+        // Retourner l'objet PDOStatement
         return $stmt;
     }
 
-    /**
-     * Obtenir toutes les réservations
-     */
+    // Récupérer toutes les réservations (admin)
     public function getAll() {
+        // Requête avec jointures pour récupérer les infos salle et utilisateur
         $query = "SELECT r.*, s.nom as salle_nom, s.localisation,
                   u.nom as user_nom, u.prenom as user_prenom
                   FROM " . $this->table . " r
@@ -106,13 +107,13 @@ class Reservation {
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
 
+        // Retourner l'objet PDOStatement
         return $stmt;
     }
 
-    /**
-     * Obtenir une réservation par ID
-     */
+    // Récupérer une réservation par son ID
     public function getById($id) {
+        // Requête pour chercher une réservation avec le nom de la salle
         $query = "SELECT r.*, s.nom as salle_nom 
                   FROM " . $this->table . " r
                   INNER JOIN salles s ON r.salle_id = s.id
@@ -123,7 +124,9 @@ class Reservation {
         $stmt->bindParam(':id', $id);
         $stmt->execute();
 
+        // Si la réservation existe
         if ($stmt->rowCount() > 0) {
+            // Charger les données
             $row = $stmt->fetch();
             $this->id = $row['id'];
             $this->user_id = $row['user_id'];

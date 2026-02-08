@@ -1,25 +1,24 @@
 <?php
-/**
- * Contrôleur d'authentification
- */
+// Contrôleur d'authentification
+// Gère l'inscription, connexion et déconnexion des utilisateurs
 
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../models/User.php';
 
 class AuthController {
-    private $db;
-    private $user;
+    private $db;    // Connexion à la base
+    private $user;  // Objet utilisateur
 
+    // Initialiser les dépendances
     public function __construct() {
         $database = new Database();
         $this->db = $database->getConnection();
         $this->user = new User($this->db);
     }
 
-    /**
-     * Afficher la page d'inscription
-     */
+    // Afficher le formulaire d'inscription
     public function showRegister() {
+        // Récupérer les messages et données d'erreurs de la session
         $errors = $_SESSION['errors'] ?? [];
         $old_data = $_SESSION['old_data'] ?? [];
         unset($_SESSION['errors'], $_SESSION['old_data']);
@@ -27,40 +26,42 @@ class AuthController {
         require_once __DIR__ . '/../views/auth/register.php';
     }
 
-    /**
-     * Traiter l'inscription
-     */
+    // Traiter l'enregistrement d'un nouvel utilisateur
     public function register() {
         $errors = [];
 
-        // Validation des champs
+        // Valider le nom
         if (empty($_POST['nom'])) {
             $errors[] = "Le nom est obligatoire.";
         }
 
+        // Valider le prénom
         if (empty($_POST['prenom'])) {
             $errors[] = "Le prénom est obligatoire.";
         }
 
+        // Valider l'email
         if (empty($_POST['email'])) {
             $errors[] = "L'email est obligatoire.";
         } elseif (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
             $errors[] = "L'email n'est pas valide.";
         }
 
+        // Valider le mot de passe
         if (empty($_POST['mot_de_passe'])) {
             $errors[] = "Le mot de passe est obligatoire.";
         } elseif (strlen($_POST['mot_de_passe']) < 6) {
             $errors[] = "Le mot de passe doit contenir au moins 6 caractères.";
         }
 
+        // Valider la confirmation du mot de passe
         if (empty($_POST['confirmer_mot_de_passe'])) {
             $errors[] = "La confirmation du mot de passe est obligatoire.";
         } elseif ($_POST['mot_de_passe'] !== $_POST['confirmer_mot_de_passe']) {
             $errors[] = "Les mots de passe ne correspondent pas.";
         }
 
-        // Vérifier si l'email existe déjà
+        // Vérifier si l'email n'existe pas déjà
         if (empty($errors)) {
             $this->user->email = $_POST['email'];
             if ($this->user->emailExists()) {
@@ -68,7 +69,7 @@ class AuthController {
             }
         }
 
-        // S'il y a des erreurs, retourner au formulaire
+        // Si erreurs, rediriger avec messages
         if (!empty($errors)) {
             $_SESSION['errors'] = $errors;
             $_SESSION['old_data'] = $_POST;
@@ -76,13 +77,14 @@ class AuthController {
             exit;
         }
 
-        // Créer l'utilisateur
+        // Créer l'utilisateur dans la base
         $this->user->nom = $_POST['nom'];
         $this->user->prenom = $_POST['prenom'];
         $this->user->email = $_POST['email'];
         $this->user->mot_de_passe = $_POST['mot_de_passe'];
         $this->user->role = 'utilisateur';
 
+        // Vérifier si l'insertion a réussi
         if ($this->user->create()) {
             $_SESSION['success'] = "Inscription réussie ! Vous pouvez maintenant vous connecter.";
             header('Location: index.php?action=login');
@@ -95,10 +97,9 @@ class AuthController {
         }
     }
 
-    /**
-     * Afficher la page de connexion
-     */
+    // Afficher le formulaire de connexion
     public function showLogin() {
+        // Récupérer les messages et données d'erreurs de la session
         $errors = $_SESSION['errors'] ?? [];
         $success = $_SESSION['success'] ?? '';
         unset($_SESSION['errors'], $_SESSION['success']);
@@ -106,35 +107,34 @@ class AuthController {
         require_once __DIR__ . '/../views/auth/login.php';
     }
 
-    /**
-     * Traiter la connexion
-     */
+    // Traiter la connexion d'un utilisateur
     public function login() {
         $errors = [];
 
-        // Validation des champs
+        // Valider l'email
         if (empty($_POST['email'])) {
             $errors[] = "L'email est obligatoire.";
         }
 
+        // Valider le mot de passe
         if (empty($_POST['mot_de_passe'])) {
             $errors[] = "Le mot de passe est obligatoire.";
         }
 
-        // S'il y a des erreurs, retourner au formulaire
+        // Si erreurs, rediriger avec messages
         if (!empty($errors)) {
             $_SESSION['errors'] = $errors;
             header('Location: index.php?action=login');
             exit;
         }
 
-        // Vérifier les identifiants
+        // Chercher l'utilisateur par email
         $this->user->email = $_POST['email'];
         
         if ($this->user->emailExists()) {
-            // Vérifier le mot de passe
+            // Vérifier le mot de passe haché
             if (password_verify($_POST['mot_de_passe'], $this->user->mot_de_passe)) {
-                // Connexion réussie
+                // Connexion réussie - stocker les infos en session
                 $_SESSION['user_id'] = $this->user->id;
                 $_SESSION['user_nom'] = $this->user->nom;
                 $_SESSION['user_prenom'] = $this->user->prenom;
@@ -146,16 +146,15 @@ class AuthController {
             }
         }
 
-        // Identifiants incorrects
+        // Email ou mot de passe incorrect
         $_SESSION['errors'] = ["Email ou mot de passe incorrect."];
         header('Location: index.php?action=login');
         exit;
     }
 
-    /**
-     * Déconnexion
-     */
+    // Déconnecter l'utilisateur
     public function logout() {
+        // Détruire la session
         session_destroy();
         header('Location: index.php?action=login');
         exit;

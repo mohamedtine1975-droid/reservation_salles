@@ -1,10 +1,8 @@
 <?php
-/**
- * Point d'entrée de l'application
- * Routeur simple MVC
- */
+// Point d'entrée principal de l'application
+// Routeur MVC - Dirige les requêtes vers les bons contrôleurs
 
-// Démarrer la session
+// Démarrer la session pour stocker les infos utilisateur
 session_start();
 
 // Inclure les contrôleurs
@@ -12,14 +10,15 @@ require_once __DIR__ . '/../controllers/AuthController.php';
 require_once __DIR__ . '/../controllers/SalleController.php';
 require_once __DIR__ . '/../controllers/ReservationController.php';
 
-// Récupérer l'action demandée
+// Récupérer l'action demandée depuis l'URL (GET), par défaut 'login'
 $action = $_GET['action'] ?? 'login';
 
-// Router les actions
+// Router les actions vers les contrôleurs appropriés
 switch ($action) {
-    // Authentification
+    // === AUTHENTIFICATION ===
     case 'register':
         $controller = new AuthController();
+        // Afficher le formulaire en GET, traiter l'inscription en POST
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $controller->register();
         } else {
@@ -29,6 +28,7 @@ switch ($action) {
 
     case 'login':
         $controller = new AuthController();
+        // Afficher le formulaire en GET, traiter la connexion en POST
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $controller->login();
         } else {
@@ -41,25 +41,26 @@ switch ($action) {
         $controller->logout();
         break;
 
-    // Salles
+    // === SALLES ===
     case 'salles':
         $controller = new SalleController();
-        $controller->index();
+        $controller->index();  // Afficher la liste des salles
         break;
 
     case 'detail_salle':
         $controller = new SalleController();
-        $controller->detail();
+        $controller->detail();  // Afficher les détails d'une salle
         break;
 
-    // Réservations
+    // === RÉSERVATIONS ===
     case 'reserver':
         $controller = new ReservationController();
-        $controller->create();
+        $controller->create();  // Afficher le formulaire de réservation
         break;
 
     case 'store_reservation':
         $controller = new ReservationController();
+        // Traiter l'enregistrement d'une réservation en POST
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $controller->store();
         } else {
@@ -70,10 +71,10 @@ switch ($action) {
 
     case 'historique':
         $controller = new ReservationController();
-        $controller->historique();
+        $controller->historique();  // Afficher l'historique des réservations
         break;
 
-    // Page par défaut
+    // === PAGE PAR DÉFAUT ===
     default:
         header('Location: index.php?action=login');
         exit;

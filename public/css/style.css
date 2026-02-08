@@ -1,10 +1,12 @@
-/* Reset et styles de base */
+/* ===== RESET ET STYLES DE BASE ===== */
+/* Réinitialiser les marges et paddings par défaut */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* Styles du corps */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
@@ -12,13 +14,15 @@ body {
     background-color: #f4f4f4;
 }
 
+/* Conteneur principal - largeur max et centré */
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
 }
 
-/* En-tête */
+/* ===== EN-TÊTE ===== */
+/* Barre d'en-tête avec dégradé de couleurs */
 header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -26,10 +30,12 @@ header {
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
+/* Titre principal */
 header h1 {
     margin-bottom: 1rem;
 }
 
+/* Navigation */
 header nav {
     display: flex;
     gap: 1.5rem;
@@ -37,6 +43,7 @@ header nav {
     flex-wrap: wrap;
 }
 
+/* Liens de navigation */
 header nav a {
     color: white;
     text-decoration: none;
@@ -45,14 +52,17 @@ header nav a {
     transition: background-color 0.3s;
 }
 
+/* Effet au survol des liens */
 header nav a:hover {
     background-color: rgba(255,255,255,0.2);
 }
 
+/* Infos utilisateur alignées à droite */
 .user-info {
     margin-left: auto;
 }
 
+/* Bouton de déconnexion */
 .btn-logout {
     background-color: rgba(255,255,255,0.2);
 }
@@ -61,13 +71,13 @@ header nav a:hover {
     background-color: rgba(255,255,255,0.3);
 }
 
-/* Main */
+/* ===== CONTENU PRINCIPAL ===== */
 main {
     padding: 2rem 0;
     min-height: calc(100vh - 200px);
 }
 
-/* Footer */
+/* ===== PIED DE PAGE ===== */
 footer {
     background-color: #333;
     color: white;
@@ -76,7 +86,8 @@ footer {
     margin-top: 3rem;
 }
 
-/* Boutons */
+/* ===== BOUTONS ===== */
+/* Style de base pour tous les boutons */
 .btn {
     display: inline-block;
     padding: 0.75rem 1.5rem;
@@ -88,6 +99,7 @@ footer {
     font-size: 1rem;
 }
 
+/* Bouton principal (bleu/violet) */
 .btn-primary {
     background-color: #667eea;
     color: white;
@@ -99,6 +111,7 @@ footer {
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
+/* Bouton secondaire (gris) */
 .btn-secondary {
     background-color: #6c757d;
     color: white;
@@ -108,11 +121,13 @@ footer {
     background-color: #5a6268;
 }
 
-/* Formulaires */
+/* ===== FORMULAIRES ===== */
+/* Groupe de formulaire */
 .form-group {
     margin-bottom: 1.5rem;
 }
 
+/* Labels des formulaires */
 .form-group label {
     display: block;
     margin-bottom: 0.5rem;
@@ -120,6 +135,7 @@ footer {
     color: #555;
 }
 
+/* Champs de saisie */
 .form-group input,
 .form-group select,
 .form-group textarea {
@@ -131,6 +147,7 @@ footer {
     transition: border-color 0.3s;
 }
 
+/* Focus sur les champs */
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
@@ -138,19 +155,22 @@ footer {
     border-color: #667eea;
 }
 
+/* Grid pour les champs côte à côte */
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
 }
 
+/* Boutons d'actions du formulaire */
 .form-actions {
     display: flex;
     gap: 1rem;
     margin-top: 2rem;
 }
 
-/* Authentification */
+/* ===== AUTHENTIFICATION ===== */
+/* Conteneur centré pour les formulaires d'auth */
 .auth-container {
     display: flex;
     justify-content: center;
@@ -158,6 +178,7 @@ footer {
     min-height: calc(100vh - 200px);
 }
 
+/* Boîte de connexion/inscription */
 .auth-box {
     background: white;
     padding: 2.5rem;
@@ -167,12 +188,14 @@ footer {
     max-width: 450px;
 }
 
+/* Titre de la boîte d'auth */
 .auth-box h2 {
     margin-bottom: 1.5rem;
     color: #667eea;
     text-align: center;
 }
 
+/* Lien vers autre page d'auth */
 .auth-link {
     text-align: center;
     margin-top: 1.5rem;
@@ -188,7 +211,7 @@ footer {
     text-decoration: underline;
 }
 
-/* Alertes */
+/* ===== MESSAGES ET ALERTES ===== */
 .alert {
     padding: 1rem;
     border-radius: 5px;
@@ -199,25 +222,29 @@ footer {
     margin-left: 1.5rem;
 }
 
+/* Alerte d'erreur (rouge) */
 .alert-error {
     background-color: #f8d7da;
     color: #721c24;
     border: 1px solid #f5c6cb;
 }
 
+/* Alerte de succès (vert) */
 .alert-success {
     background-color: #d4edda;
     color: #155724;
     border: 1px solid #c3e6cb;
 }
 
+/* Alerte informatif (bleu) */
 .alert-info {
     background-color: #d1ecf1;
     color: #0c5460;
     border: 1px solid #bee5eb;
 }
 
-/* Grille des salles */
+/* ===== GRILLE DES SALLES ===== */
+/* Grid responsive pour les salles */
 .salles-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -225,6 +252,7 @@ footer {
     margin-top: 2rem;
 }
 
+/* Carte d'une salle */
 .salle-card {
     background: white;
     padding: 1.5rem;
@@ -233,27 +261,32 @@ footer {
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
+/* Effet au survol d'une salle */
 .salle-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 5px 20px rgba(0,0,0,0.15);
 }
 
+/* Titre de la salle */
 .salle-card h3 {
     color: #667eea;
     margin-bottom: 1rem;
 }
 
+/* Infos de la salle */
 .salle-info {
     margin-bottom: 1rem;
     color: #666;
 }
 
+/* Description de la salle */
 .salle-description {
     color: #888;
     font-size: 0.95rem;
     margin-bottom: 1rem;
 }
 
+/* Boutons d'actions dans la carte */
 .salle-actions {
     display: flex;
     gap: 0.5rem;
@@ -265,7 +298,7 @@ footer {
     text-align: center;
 }
 
-/* Détail salle */
+/* ===== DÉTAIL D'UNE SALLE ===== */
 .salle-detail {
     background: white;
     padding: 2rem;
@@ -275,10 +308,12 @@ footer {
     margin: 0 auto;
 }
 
+/* Boîte de détails */
 .detail-box {
     margin: 2rem 0;
 }
 
+/* Élément d'un détail */
 .detail-item {
     padding: 1rem;
     border-bottom: 1px solid #eee;
@@ -288,13 +323,15 @@ footer {
     border-bottom: none;
 }
 
+/* Boutons d'actions du détail */
 .actions-buttons {
     display: flex;
     gap: 1rem;
     margin-top: 2rem;
 }
 
-/* Réservation */
+/* ===== RÉSERVATION ===== */
+/* Infos sur la salle à réserver */
 .reservation-info {
     background: #f8f9fa;
     padding: 1rem;
@@ -302,6 +339,7 @@ footer {
     margin-bottom: 1.5rem;
 }
 
+/* Formulaire de réservation */
 .reservation-form {
     background: white;
     padding: 2rem;
@@ -309,13 +347,15 @@ footer {
     box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
 
-/* Liste des réservations */
+/* ===== LISTE DES RÉSERVATIONS ===== */
+/* Conteneur de la liste */
 .reservations-list {
     display: grid;
     gap: 1.5rem;
     margin-top: 2rem;
 }
 
+/* Carte de réservation */
 .reservation-card {
     background: white;
     padding: 1.5rem;
@@ -323,6 +363,7 @@ footer {
     box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
 
+/* En-tête de la réservation */
 .reservation-header {
     display: flex;
     justify-content: space-between;
@@ -337,6 +378,7 @@ footer {
     margin: 0;
 }
 
+/* Badge du statut */
 .statut-badge {
     padding: 0.4rem 1rem;
     border-radius: 20px;
@@ -344,57 +386,68 @@ footer {
     font-weight: 600;
 }
 
+/* Statut: confirmée (vert) */
 .statut-confirmee {
     background-color: #d4edda;
     color: #155724;
 }
 
+/* Statut: en attente (orange) */
 .statut-attente {
     background-color: #fff3cd;
     color: #856404;
 }
 
+/* Statut: annulée (rouge) */
 .statut-annulee {
     background-color: #f8d7da;
     color: #721c24;
 }
 
+/* Détails de la réservation */
 .reservation-details p {
     margin-bottom: 0.5rem;
 }
 
-/* Responsive */
+/* ===== RESPONSIVE - MOBILE ===== */
 @media (max-width: 768px) {
+    /* Formulaire: une colonne en mobile */
     .form-row {
         grid-template-columns: 1fr;
     }
 
+    /* Grille des salles: une colonne en mobile */
     .salles-grid {
         grid-template-columns: 1fr;
     }
 
+    /* Navigation en vertical */
     header nav {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
     }
 
+    /* Infos utilisateur à gauche */
     .user-info {
         margin-left: 0;
     }
 
+    /* En-tête de réservation en vertical */
     .reservation-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
     }
 
+    /* Flexbox en vertical pour les boutons */
     .form-actions,
     .actions-buttons,
     .salle-actions {
         flex-direction: column;
     }
 
+    /* Boutons largeur 100% */
     .form-actions .btn,
     .actions-buttons .btn,
     .salle-actions .btn {
