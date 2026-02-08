@@ -24,33 +24,33 @@
             <div class="form-group">
                 <label for="nom">Nom *</label>
                 <input type="text" id="nom" name="nom" 
-                       value="<?= htmlspecialchars($old_data['nom'] ?? '') ?>" required>
+                       value="<?= htmlspecialchars($old_data['nom'] ?? '') ?>" >
             </div>
 
             <!-- Champ Prénom -->
             <div class="form-group">
                 <label for="prenom">Prénom *</label>
                 <input type="text" id="prenom" name="prenom" 
-                       value="<?= htmlspecialchars($old_data['prenom'] ?? '') ?>" required>
+                       value="<?= htmlspecialchars($old_data['prenom'] ?? '') ?>" >
             </div>
 
             <!-- Champ Email -->
             <div class="form-group">
                 <label for="email">Email *</label>
                 <input type="email" id="email" name="email" 
-                       value="<?= htmlspecialchars($old_data['email'] ?? '') ?>" required>
+                       value="<?= htmlspecialchars($old_data['email'] ?? '') ?>" >
             </div>
 
             <!-- Champ Mot de passe (min 6 caractères) -->
             <div class="form-group">
                 <label for="mot_de_passe">Mot de passe * (min. 6 caractères)</label>
-                <input type="password" id="mot_de_passe" name="mot_de_passe" required>
+                <input type="password" id="mot_de_passe" name="mot_de_passe" >
             </div>
 
             <!-- Champ Confirmation mot de passe -->
             <div class="form-group">
                 <label for="confirmer_mot_de_passe">Confirmer le mot de passe *</label>
-                <input type="password" id="confirmer_mot_de_passe" name="confirmer_mot_de_passe" required>
+                <input type="password" id="confirmer_mot_de_passe" name="confirmer_mot_de_passe" >
             </div>
 
             <!-- Bouton de soumission -->

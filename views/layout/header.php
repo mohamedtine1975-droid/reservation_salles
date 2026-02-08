@@ -26,7 +26,7 @@
                     <a href="index.php?action=historique">Mes réservations</a>
                     <!-- Afficher le nom complet de l'utilisateur -->
                     <span class="user-info">
-                        👤 <?= htmlspecialchars($_SESSION['user_prenom'] . ' ' . $_SESSION['user_nom']) ?>
+                        👤 <?= htmlspecialchars($_SESSION['user_prenom'] . ' ' . $_SESSION['user_nom']) ?> 
                     </span>
                     <!-- Bouton de déconnexion -->
                     <a href="index.php?action=logout" class="btn-logout">Déconnexion</a>

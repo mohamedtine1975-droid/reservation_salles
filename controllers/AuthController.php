@@ -155,7 +155,7 @@ class AuthController {
     // Déconnecter l'utilisateur
     public function logout() {
         // Détruire la session
-        session_destroy();
+        session_destroy(); 
         header('Location: index.php?action=login');
         exit;
     }
