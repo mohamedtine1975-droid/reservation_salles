@@ -39,7 +39,7 @@ class User {
         $hashed_password = password_hash($this->mot_de_passe, PASSWORD_DEFAULT);
 
         // Lier les paramètres pour éviter les injections SQL
-        $stmt->bindParam(':nom', $this->nom);
+        $stmt->bindParam(':nom', $this->nom); 
         $stmt->bindParam(':prenom', $this->prenom);
         $stmt->bindParam(':email', $this->email);
         $stmt->bindParam(':mot_de_passe', $hashed_password);

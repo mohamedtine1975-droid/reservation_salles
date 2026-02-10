@@ -32,7 +32,7 @@ switch ($action) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $controller->login();
         } else {
-            $controller->showLogin();
+            $controller->showLogin(); 
         }
         break;
 

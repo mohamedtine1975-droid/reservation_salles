@@ -128,7 +128,7 @@ class ReservationController {
     }
 
     // Afficher l'historique des réservations de l'utilisateur
-    public function historique() {
+    public function historique() { 
         $this->requireLogin();
 
         // Récupérer toutes les réservations de l'utilisateur
